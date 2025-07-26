@@ -1,0 +1,48 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <main>
+        <div class="control">
+
+            <form action="">
+                <label for="name">Name</label><br />
+                <input type="text" id="name" /><br /><br />
+
+                <label for="role">Role:</label><br />
+                <input type="text" id="role" /><br /><br />
+
+                <label for="status">Status</label>
+                <select id="status">
+
+
+                    <option value="active">Active</option>
+                    <option value="onLeave">On Leave</option>
+                    <option value="terminated">Terminated</option>
+                </select><br /><br />
+
+                <input type="button" onclick="add_emp()" value="Add Employee" />
+                <input type="button" onclick="show_emps()" value="Employees" />
+                <input type="button" onclick="show_trash()" value="Trash" />
+
+            </form>
+            </form>
+
+        </div>
+        <div class="content">
+            <div class="table emp">
+
+            </div>
+        </div>
+
+    </main>
+    <script src="script.js"></script>
+</body>
+
+</html>

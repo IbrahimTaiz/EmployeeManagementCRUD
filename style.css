@@ -1,0 +1,10 @@
+.active{
+    background-color: greenyellow;
+}
+.terminated{
+    background-color: grey;
+}
+
+.onLeave{
+    background-color: red;
+}

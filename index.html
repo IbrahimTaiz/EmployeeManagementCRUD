@@ -1,48 +1,76 @@
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <title>Employee Management</title>
 </head>
-
 <body>
-    <main>
-        <div class="control">
+  <main>
+    <section class="form-section">
+      <h2>Add / Edit Employee</h2>
+      <form id="empForm">
+        <label for="name">Name</label><br />
+        <input type="text" id="name" /><br /><span class="error" id="errorName"></span><br />
 
-            <form action="">
-                <label for="name">Name</label><br />
-                <input type="text" id="name" /><br /><br />
+        <label for="role">Role</label><br />
+        <input type="text" id="role" /><br /><span class="error" id="errorRole"></span><br />
 
-                <label for="role">Role:</label><br />
-                <input type="text" id="role" /><br /><br />
+        <label for="salary">Salary (R)</label><br />
+        <input type="text" id="salary" /><br /><span class="error" id="errorSalary"></span><br />
 
-                <label for="status">Status</label>
-                <select id="status">
+        <label for="status">Status</label><br />
+        <select id="status">
+          <option value="">Select status</option>
+          <option value="active">Active</option>
+          <option value="onLeave">On Leave</option>
+          <option value="terminated">Terminated</option>
+        </select><br /><span class="error" id="errorStatus"></span><br /><br />
 
+        <input type="button" onclick="handleSubmit()" value="Submit" />
+      </form>
+    </section>
 
-                    <option value="active">Active</option>
-                    <option value="onLeave">On Leave</option>
-                    <option value="terminated">Terminated</option>
-                </select><br /><br />
+    <section class="filter-section">
+      <h2>Filters & Search</h2>
+      <input type="text" id="filterName" placeholder="Filter by Name" />
+      <input type="text" id="filterRole" placeholder="Filter by Role" />
+      <input type="number" id="minSalary" placeholder="Min Salary" />
+      <input type="number" id="maxSalary" placeholder="Max Salary" />
+      <input type="number" id="minBonus" placeholder="Min Bonus" />
+      <input type="number" id="maxBonus" placeholder="Max Bonus" />
+      <select id="filterStatus">
+        <option value="">All Statuses</option>
+        <option value="active">Active</option>
+        <option value="onLeave">On Leave</option>
+        <option value="terminated">Terminated</option>
+      </select>
+      <button onclick="applyFilters()">Apply Filters</button>
+      <button onclick="clearFilters()">Clear Filters</button>
+    </section>
 
-                <input type="button" onclick="add_emp()" value="Add Employee" />
-                <input type="button" onclick="show_emps()" value="Employees" />
-                <input type="button" onclick="show_trash()" value="Trash" />
+    <section class="controls">
+      <button onclick="calculatePayroll()">Show Total Payroll</button>
+      <button onclick="deleteLowSalary()">Delete Salaries ≤ 20,000 R</button>
+    </section>
 
-            </form>
-            </form>
+    <section class="table-section">
+      <h2>Employee List</h2>
+      <div id="empTable"></div>
+    </section>
+  </main>
 
-        </div>
-        <div class="content">
-            <div class="table emp">
+  <!-- Bonus Modal -->
+  <div id="bonusModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Add Bonus (%)</h3>
+      <input type="number" id="bonusPercent" min="0" max="100" /><br /><br />
+      <button onclick="applyBonus()">Apply</button>
+      <button onclick="closeBonusModal()">Cancel</button>
+    </div>
+  </div>
 
-            </div>
-        </div>
-
-    </main>
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
-
 </html>

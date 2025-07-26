@@ -1,10 +1,17 @@
-.active{
-    background-color: greenyellow;
-}
-.terminated{
-    background-color: grey;
-}
-
-.onLeave{
-    background-color: red;
+body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+main { padding: 20px; max-width: 900px; margin: auto; }
+section { margin-bottom: 30px; }
+input, select, button { padding: 8px; margin: 4px 0; width: 100%; max-width: 300px; }
+.error { color: red; font-size: 0.9em; }
+.badge { padding: 2px 6px; margin-left: 5px; border-radius: 4px; font-size: 0.9em; vertical-align: middle; }
+.badge.high { background-color: green; color: white; }
+.badge.bonus { background-color: pink; }
+.emp-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 8px; border-bottom: 1px solid #ddd; }
+.emp-row span { margin-right: 10px; }
+.emp-row input[type="button"] { width: auto; padding: 4px 8px; }
+.modal { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; }
+.modal.hidden { display: none; }
+.modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; }
+@media (min-width: 600px) {
+  .emp-row span { flex: 1 1 150px; }
 }

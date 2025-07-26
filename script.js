@@ -1,251 +1,163 @@
-const content = document.getElementsByClassName("table")[0];
-document.querySelector("#status").value = "";
-let deletedArray = [];
-let empsArray = [];
+const empTable = document.getElementById("empTable");
+let employees = [];
+let editingId = null;
+let bonusTargetId = null;
 
-let counter = 0;
-// content.addEventListener("onclick",()=>{
-//   console.log("Hay")
+function handleSubmit() {
+  clearErrors();
+  const name = document.getElementById("name").value.trim();
+  const role = document.getElementById("role").value.trim();
+  const salaryStr = document.getElementById("salary").value.trim();
+  const status = document.getElementById("status").value;
 
-// })
-// content.onclick = ()=>{
-// }
-function add_emp() {
-  counter++;
-  var nameField = document.getElementById("name");
-  var nameText = nameField.value;
+  let valid = true;
+  if (!name) { showError("errorName", "Name required"); valid = false; }
+  if (!role) { showError("errorRole", "Role required"); valid = false; }
+  if (!/^[1-9]\d{3,}$/.test(salaryStr)) { showError("errorSalary", "Salary must be at least 1000 R"); valid = false; }
+  if (!status) { showError("errorStatus", "Status required"); valid = false; }
+  if (!valid) return;
 
-  var roleField = document.getElementById("role");
-  var roleText = roleField.value;
-
-  var statusField = document.getElementById("status");
-  var statusText = statusField.value;
-
-  if (nameText != "" && roleText != "" && statusText != "") {
-    // validate empty fields
-    if (content.classList.contains("emp")) {
-      // create an employee container
-      var empDiv = document.createElement("div");
-      empDiv.setAttribute("id", `emp-${counter}`);
-
-      // create employee's data one by one
-      var nameSpan = document.createElement("span"); //id
-      nameSpan.setAttribute("id", `name-${counter}`);
-      nameSpan.innerText = nameText;
-
-      var roleSpan = document.createElement("span");
-      roleSpan.setAttribute("id", `role-${counter}`);
-      roleSpan.innerText = roleText;
-
-      var editButton = document.createElement("input");
-      editButton.setAttribute("type", "button");
-      editButton.setAttribute("value", "Edit");
-      editButton.setAttribute("id", `edit-${counter}`);
-      editButton.setAttribute("onclick", `edit_emp(${counter})`);
-
-      var deleteButton = document.createElement("input");
-      deleteButton.setAttribute("type", "button");
-      deleteButton.setAttribute("value", "Delete");
-      deleteButton.setAttribute("id", `delete-${counter}`);
-      deleteButton.setAttribute("onclick", `delete_emp(${counter})`);
-
-      empDiv.append(nameSpan, roleSpan, editButton, deleteButton);
-
-      switch (statusText) {
-        case "active":
-          empDiv.classList.add("active");
-          break;
-        case "onLeave":
-          empDiv.classList.add("onLeave");
-
-          break;
-        case "terminated":
-          empDiv.classList.add("terminated");
-
-          break;
-      }
-
-      content.appendChild(empDiv);
-      //empsArray.push(empDiv)
-
-      //console.log(nameText, roleText, statusText, counter, empDiv);
-
-      // nameField.value = "";
-      // roleField.value = "";
-      // statusField.value = "";
-    } else {
-      window.alert("go to emps page");
-    }
+  const salary = parseFloat(salaryStr);
+  if (editingId !== null) {
+    Object.assign(employees.find(e => e.id === editingId), { name, role, salary, status });
+    editingId = null;
   } else {
-    window.alert("empty Fields");
+    const id = Date.now();
+    employees.push({ id, name, role, salary, status, bonus: 0 });
   }
+  document.getElementById("empForm").reset();
+  renderTable();
 }
 
-function edit_emp(id) {
-  const empDiv = document.getElementById(`emp-${id}`);
-
-  const nameSpan = document.getElementById(`name-${id}`);
-  const roleSpan = document.getElementById(`role-${id}`);
-  const statusList = document.getElementById("status").cloneNode(true);
-
-  const editButton = document.getElementById(`edit-${id}`);
-
-  const statuse = empDiv.getAttribute("class");
-  console.log(statuse);
-  console.log(statusList);
-  editButton.setAttribute("value", "Save");
-  editButton.setAttribute("onclick", `save(${id})`);
-
-  empDiv.removeChild(nameSpan);
-  empDiv.removeChild(roleSpan);
-
-  const nameField = document.createElement("input");
-  nameField.setAttribute("type", "text");
-  nameField.setAttribute("value", nameSpan.innerText);
-  nameField.setAttribute("id", `nameField-${id}`);
-
-  const roleField = document.createElement("input");
-  roleField.setAttribute("type", "text");
-  roleField.setAttribute("value", roleSpan.innerText);
-  roleField.setAttribute("id", `roleField-${id}`);
-
-  statusList.setAttribute("id", `status-${id}`);
-  statusList.value = statuse;
-  editButton.before(nameField, roleField, statusList);
-  //console.log(empDiv, nameSpan, roleSpan, editButton, statuse);
+function showError(elId, msg) {
+  document.getElementById(elId).innerText = msg;
+}
+function clearErrors() {
+  ["errorName","errorRole","errorSalary","errorStatus"].forEach(id => document.getElementById(id).innerText = "");
 }
 
-function save(id) {
-  var empName = document.getElementById(`nameField-${id}`);
-  var empRole = document.getElementById(`roleField-${id}`);
-  var empSatatus = document.getElementById(`status-${id}`);
-  const editButton = document.getElementById(`edit-${id}`);
-  const empDiv = document.getElementById(`emp-${id}`);
+function renderTable(data = employees) {
+  empTable.innerHTML = "";
+  data.forEach(emp => {
+    const div = document.createElement("div");
+    div.className = "emp-row " + emp.status;
+    div.id = `emp-${emp.id}`;
 
-  var nameText = empName.value;
-  var roleText = empRole.value;
-  var statuseVale = empSatatus.value;
+    const base = (t) => {
+      const span = document.createElement("span");
+      span.innerText = t;
+      return span;
+    };
 
-  var nameSpan = document.createElement("span"); //id
-  nameSpan.setAttribute("id", `name-${id}`);
-  nameSpan.innerText = nameText;
-
-  var roleSpan = document.createElement("span");
-  roleSpan.setAttribute("id", `role-${id}`);
-  roleSpan.innerText = roleText;
-
-  switch (statuseVale) {
-    case "active":
-      empDiv.setAttribute("class", "active");
-      // empDiv.classList.add("active");
-      break;
-    case "onLeave":
-      // empDiv.classList.add("onLeave");
-      empDiv.setAttribute("class", "onLeave");
-
-      break;
-    case "terminated":
-      // empDiv.classList.add("terminated");
-      empDiv.setAttribute("class", "terminated");
-
-      break;
-  }
-
-  empDiv.removeChild(empName);
-  empDiv.removeChild(empRole);
-  empDiv.removeChild(empSatatus);
-
-  editButton.before(nameSpan);
-  editButton.before(roleSpan);
-
-  editButton.setAttribute("onclick", `edit_emp(${id})`);
-  editButton.setAttribute("value", "Edit");
-}
-
-function delete_emp(id) {
-  const empDiv = document.getElementById(`emp-${id}`);
-  deletedArray.push(empDiv);
-  content.removeChild(empDiv);
-
-  // console.log(deletedArray[0]);
-}
-
-function show_trash() {
-  empsArray.length = 0;
-  content.classList.add("del");
-  content.classList.remove("emp");
-  const temp = [];
-
-  for (var i = 0; i < content.children.length; i++) {
-    temp.push(content.children[i]);
-  }
-
-  for (var i = 0; i < temp.length; i++) {
-    empsArray.push(temp[i]);
-    content.removeChild(temp[i]);
-  }
-
-  for (var i = 0; i < deletedArray.length; i++) {
-    content.appendChild(deletedArray[i]);
-  }
-
-  for (var i = 0; i < deletedArray.length; i++) {
-    const item = deletedArray[i];
-
-    const editBtn = item.querySelector(`#edit-${item.id.split("-")[1]}`);
-    const deleteBtn = item.querySelector(`#delete-${item.id.split("-")[1]}`);
-
-      editBtn.value = "Restore";
-      editBtn.onclick = function () {
-        empsArray.push(item);
-        deletedArray.splice(deletedArray.indexOf(item), 1);
-        content.removeChild(item);
-      };
-
-      deleteBtn.value = "Premenent Deletion";
-      deleteBtn.onclick = function () {
-        deletedArray.splice(deletedArray.indexOf(item), 1);
-        content.removeChild(item);
-      };
-    
-  }
-}
-
-function show_emps() {
-  if (!content.classList.contains("emp")) {
-    deletedArray.length = 0;
-    content.classList.add("emp");
-    content.classList.remove("del");
-
-    const temp = [];
-
-    for (var i = 0; i < content.children.length; i++) {
-      temp.push(content.children[i]);
+    div.appendChild(base(emp.name));
+    if (emp.salary >= 100000) {
+      const badge = document.createElement("span");
+      badge.className = "badge high";
+      badge.innerText = "High";
+      div.appendChild(badge);
     }
-
-    for (var i = 0; i < temp.length; i++) {
-      deletedArray.push(temp[i]);
-      content.removeChild(temp[i]);
+    if (emp.bonus > 0) {
+      const badge = document.createElement("span");
+      badge.className = "badge bonus";
+      badge.innerText = "Bonus";
+      div.appendChild(badge);
     }
+    div.appendChild(base(emp.role));
+    div.appendChild(base(`R ${emp.salary.toFixed(2)}`));
+    div.appendChild(base(emp.bonus > 0 ? `Bonus: R ${emp.bonus.toFixed(2)}` : "No bonus"));
 
-    for (var i = 0; i < empsArray.length; i++) {
-      content.appendChild(empsArray[i]);
-    }
+    const bonusBtn = document.createElement("input");
+    bonusBtn.type = "button";
+    bonusBtn.value = "Add Bonus";
+    bonusBtn.onclick = () => openBonusModal(emp.id);
+    div.appendChild(bonusBtn);
 
-    for (var i = 0; i < empsArray.length; i++) {
-      const item = empsArray[i];
-      const id = item.id.split("-")[1];
+    const editBtn = document.createElement("input");
+    editBtn.type = "button";
+    editBtn.value = "Edit";
+    editBtn.onclick = () => startEdit(emp.id);
+    div.appendChild(editBtn);
 
-      const editBtn = item.querySelector(`#edit-${id}`);
-      const deleteBtn = item.querySelector(`#delete-${id}`);
+    const delBtn = document.createElement("input");
+    delBtn.type = "button";
+    delBtn.value = "Delete";
+    delBtn.onclick = () => {
+      employees = employees.filter(e => e.id !== emp.id);
+      renderTable();
+    };
+    div.appendChild(delBtn);
 
-      if (editBtn && deleteBtn) {
-        editBtn.value = "Edit";
-        editBtn.setAttribute("onclick", `edit_emp(${id})`);
-
-        deleteBtn.value = "Delete";
-        deleteBtn.setAttribute("onclick", `delete_emp(${id})`);
-      }
-    }
-  }
+    empTable.appendChild(div);
+  });
 }
+
+function startEdit(id) {
+  const emp = employees.find(e => e.id === id);
+  editingId = id;
+  document.getElementById("name").value = emp.name;
+  document.getElementById("role").value = emp.role;
+  document.getElementById("salary").value = emp.salary;
+  document.getElementById("status").value = emp.status;
+}
+
+function openBonusModal(id) {
+  bonusTargetId = id;
+  document.getElementById("bonusPercent").value = "";
+  document.getElementById("bonusModal").classList.remove("hidden");
+}
+
+function closeBonusModal() {
+  document.getElementById("bonusModal").classList.add("hidden");
+}
+
+function applyBonus() {
+  const pct = parseFloat(document.getElementById("bonusPercent").value);
+  if (isNaN(pct) || pct < 0) return alert("Enter valid bonus percentage");
+  const emp = employees.find(e => e.id === bonusTargetId);
+  emp.bonus = emp.salary * pct / 100;
+  closeBonusModal();
+  renderTable();
+}
+
+function applyFilters() {
+  const name = document.getElementById("filterName").value.trim().toLowerCase();
+  const role = document.getElementById("filterRole").value.trim().toLowerCase();
+  const minS = parseFloat(document.getElementById("minSalary").value) || 0;
+  const maxS = parseFloat(document.getElementById("maxSalary").value) || Infinity;
+  const minB = parseFloat(document.getElementById("minBonus").value) || 0;
+  const maxB = parseFloat(document.getElementById("maxBonus").value) || Infinity;
+  const status = document.getElementById("filterStatus").value;
+
+  const filtered = employees.filter(e => {
+    return (!name || e.name.toLowerCase().includes(name)) &&
+           (!role || e.role.toLowerCase().includes(role)) &&
+           e.salary >= minS && e.salary <= maxS &&
+           e.bonus >= minB && e.bonus <= maxB &&
+           (!status || e.status === status);
+  });
+  renderTable(filtered);
+}
+
+function clearFilters() {
+  document.getElementById("filterName").value = "";
+  document.getElementById("filterRole").value = "";
+  document.getElementById("minSalary").value = "";
+  document.getElementById("maxSalary").value = "";
+  document.getElementById("minBonus").value = "";
+  document.getElementById("maxBonus").value = "";
+  document.getElementById("filterStatus").value = "";
+  renderTable();
+}
+
+function calculatePayroll() {
+  const total = employees.map(e => e.salary).reduce((a,b) => a + b, 0);
+  alert(`Total Payroll: R ${total.toFixed(2)}`);
+}
+
+function deleteLowSalary() {
+  employees = employees.filter(e => e.salary > 20000);
+  renderTable();
+}
+
+// initial render
+renderTable();
